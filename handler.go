@@ -44,7 +44,7 @@ func (h handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusBadRequest)
 			return
 		}
-		if amount > 10000 {
+		if amount > 1000000 {
 			w.WriteHeader(http.StatusForbidden)
 			return
 		}
