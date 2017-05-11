@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"os"
+	"strconv"
 )
 
 type historyHandler struct {
@@ -14,6 +15,10 @@ type historyHandler struct {
 func (h historyHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case "GET":
+		size := 5
+		if newSize, err := strconv.Atoi(r.FormValue("size")); err == nil && newSize > 0 {
+			size = newSize
+		}
 		f, err := os.Open(h.filename)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
@@ -26,8 +31,8 @@ func (h historyHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			entries = append(entries, scanner.Text())
 		}
 		index := 0
-		if len(entries) > 5 {
-			index = len(entries) - 5
+		if len(entries) > size {
+			index = len(entries) - size
 		}
 		if err := json.NewEncoder(w).Encode(entries[index:]); err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
