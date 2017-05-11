@@ -14,13 +14,19 @@ type handler struct {
 func (h handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case "GET":
+		timezone, err := time.LoadLocation("Australia/Sydney")
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+		now := time.Now().In(timezone)
 		month := r.FormValue("month")
 		if month == "" {
-			month = time.Now().Format("01")
+			month = now.Format("01")
 		}
 		year := r.FormValue("year")
 		if year == "" {
-			year = time.Now().Format("2006")
+			year = now.Format("2006")
 		}
 		monthInt, err := strconv.ParseInt(month, 10, 64)
 		if err != nil {

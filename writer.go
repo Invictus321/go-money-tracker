@@ -54,7 +54,11 @@ func (w writer) WriteAmount(amount int64) error {
 
 	defer f.Close()
 
-	if _, err = f.WriteString(fmt.Sprintf("%s,%.2f\n", time.Now().Format(dateFormat), floatAmount)); err != nil {
+	timezone, err := time.LoadLocation("Australia/Sydney")
+	if err != nil {
+		return err
+	}
+	if _, err = f.WriteString(fmt.Sprintf("%s,%.2f\n", time.Now().In(timezone).Format(dateFormat), floatAmount)); err != nil {
 		return err
 	}
 	return nil
