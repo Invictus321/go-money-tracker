@@ -38,6 +38,22 @@ func (h historyHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
+	case "DELETE":
+		f, err := os.Open(h.filename)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+		fileLength := 0
+		defer f.Close()
+		scanner := bufio.NewScanner(f)
+		for scanner.Scan() {
+			fileLength++
+		}
+		if err := removeLines(h.filename, fileLength, 1); err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
 	default:
 		w.WriteHeader(http.StatusMethodNotAllowed)
 	}
